@@ -66,6 +66,29 @@ function formatDate(iso){
   return new Intl.DateTimeFormat("es-ES", { dateStyle:"short", timeStyle:"short" }).format(d);
 }
 
+function toDateKey(date){
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function matchDateKey(match){
+  if (!match.datetime) return null;
+  return String(match.datetime).split("T")[0];
+}
+
+function formatMatchDayLabel(dateKey){
+  if (!dateKey) return "Sin fecha";
+  const d = new Date(`${dateKey}T00:00:00`);
+  return new Intl.DateTimeFormat("es-ES", {
+    weekday: "long",
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  }).format(d);
+}
+
 function deepMerge(target, source){
   if (!source || typeof source !== "object") return target;
   for (const [k,v] of Object.entries(source)){
@@ -295,7 +318,32 @@ function populateSelectOptions(){
   $("#poTeamPoints").textContent = String(DATA.rules.pickScoring.playoffsTeamPoints ?? 0);
 }
 
+function populateLeagueDayFilter(){
+  const sel = $("#leagueDayFilter");
+  if (!sel) return;
+  const keys = Array.from(new Set(DATA.matches.map(matchDateKey).filter(Boolean))).sort();
+  sel.innerHTML = "";
+
+  const all = document.createElement("option");
+  all.value = "all";
+  all.textContent = "Todos los días";
+  sel.appendChild(all);
+
+  for (const key of keys){
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = formatMatchDayLabel(key);
+    sel.appendChild(opt);
+  }
+
+  const todayKey = toDateKey(new Date());
+  let defaultKey = keys.find((key) => key >= todayKey);
+  if (!defaultKey && keys.length) defaultKey = keys[keys.length - 1];
+  sel.value = defaultKey || "all";
+}
+
 function renderMatchesTable(){
+  const dayFilter = $("#leagueDayFilter").value;
   const stageFilter = $("#leagueStageFilter").value;
   const playedFilter = $("#leaguePlayedFilter").value;
   const q = $("#leagueSearch").value.trim().toLowerCase();
@@ -304,6 +352,7 @@ function renderMatchesTable(){
   tbody.innerHTML = "";
 
   const rows = DATA.matches.filter(m => {
+    if (dayFilter !== "all" && matchDateKey(m) !== dayFilter) return false;
     if (stageFilter !== "all" && m.stage !== stageFilter) return false;
     const actual = getMatchActual(m);
     if (playedFilter === "played" && !actual) return false;
@@ -650,6 +699,7 @@ function wireButtons(){
 }
 
 function wireFilters(){
+  $("#leagueDayFilter").addEventListener("change", renderMatchesTable);
   $("#leagueStageFilter").addEventListener("change", renderMatchesTable);
   $("#leaguePlayedFilter").addEventListener("change", renderMatchesTable);
   $("#leagueSearch").addEventListener("input", renderMatchesTable);
@@ -700,6 +750,7 @@ async function init(){
   loadLocalOverrides();
 
   populateSelectOptions();
+  populateLeagueDayFilter();
   wireTabs();
   wireDialog();
   wireButtons();
