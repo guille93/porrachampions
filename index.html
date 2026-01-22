@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Porra Champions League</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Porra Champions League 2025-2026</p>
+      <h1>Gestión visual de la porra</h1>
+      <p class="subtitle">
+        Datos oficiales del Excel (League, ADMIN y CLAS) convertidos a una vista navegable para
+        GitHub Pages. Usa las pestañas para consultar partidos, pronósticos y clasificación.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+    <nav class="tabs" aria-label="Hojas">
+      <button class="tab is-active" data-tab="league">League</button>
+      <button class="tab" data-tab="admin">ADMIN</button>
+      <button class="tab" data-tab="clas">CLAS</button>
+    </nav>
+
+    <section id="league" class="sheet-panel is-visible" data-sheet="league">
+      <div class="sheet-header">
+        <h2>League</h2>
+        <p>Listado completo de partidos, clasificaciones y datos de la fase de liga.</p>
+      </div>
+      <div class="sheet-controls">
+        <input type="search" class="sheet-search" placeholder="Filtrar filas (equipo, jornada, marcador...)" />
+        <label class="checkbox">
+          <input type="checkbox" class="toggle-empty" />
+          Ocultar filas vacías
+        </label>
+      </div>
+      <div class="table-wrap">
+        <table class="sheet-table" data-table="league"></table>
+      </div>
+    </section>
+
+    <section id="admin" class="sheet-panel" data-sheet="admin">
+      <div class="sheet-header">
+        <h2>ADMIN</h2>
+        <p>Pronósticos por participante y reglas de puntuación.</p>
+      </div>
+      <div class="sheet-controls">
+        <input type="search" class="sheet-search" placeholder="Filtrar filas (jugador, partido, puntos...)" />
+        <label class="checkbox">
+          <input type="checkbox" class="toggle-empty" />
+          Ocultar filas vacías
+        </label>
+      </div>
+      <div class="table-wrap">
+        <table class="sheet-table" data-table="admin"></table>
+      </div>
+    </section>
+
+    <section id="clas" class="sheet-panel" data-sheet="clas">
+      <div class="sheet-header">
+        <h2>CLAS</h2>
+        <p>Clasificación general de la porra.</p>
+      </div>
+      <div class="sheet-controls">
+        <input type="search" class="sheet-search" placeholder="Filtrar filas (jugador, puntos...)" />
+        <label class="checkbox">
+          <input type="checkbox" class="toggle-empty" />
+          Ocultar filas vacías
+        </label>
+      </div>
+      <div class="table-wrap">
+        <table class="sheet-table" data-table="clas"></table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Actualiza los datos editando los JSON en <code>/data</code> cuando cambie el Excel original.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
