@@ -12,26 +12,46 @@
       <div>
         <h1>Porra Champions 2025–2026</h1>
         <p class="muted" id="metaLine">Cargando datos…</p>
+        <div class="meta-chips">
+          <span class="pill">💾 Guardado automático</span>
+          <span class="pill">🌐 Sin servidor</span>
+          <span class="pill">⚡ Datos en tiempo real</span>
+        </div>
       </div>
 
       <div class="header-actions">
-        <button class="btn" id="btnExport">Exportar estado</button>
-        <button class="btn" id="btnImport">Importar estado</button>
-        <button class="btn btn-ghost" id="btnReset">Restaurar datos de Excel</button>
+        <button class="btn" id="btnExport">⬇️ Exportar estado</button>
+        <button class="btn" id="btnImport">⬆️ Importar estado</button>
+        <button class="btn btn-ghost" id="btnReset">♻️ Restaurar datos de Excel</button>
       </div>
     </div>
 
     <nav class="tabs">
       <div class="container tab-row" role="tablist" aria-label="Secciones">
-        <button class="tab active" data-view="league" role="tab" aria-selected="true">League</button>
-        <button class="tab" data-view="admin" role="tab" aria-selected="false">Admin</button>
-        <button class="tab" data-view="clas" role="tab" aria-selected="false">Clas</button>
+        <button class="tab active" data-view="league" role="tab" aria-selected="true">🏆 League</button>
+        <button class="tab" data-view="admin" role="tab" aria-selected="false">🛠️ Admin</button>
+        <button class="tab" data-view="clas" role="tab" aria-selected="false">📊 Clas</button>
       </div>
     </nav>
   </header>
 
   <main class="container">
     <section id="view-league" class="view active" aria-label="League">
+      <div class="panel intro">
+        <div>
+          <h2>Empieza por aquí</h2>
+          <p class="muted">
+            Filtra los partidos, actualiza resultados reales y revisa la clasificación al instante. Usa la búsqueda rápida para encontrar equipos o
+            placeholders.
+          </p>
+        </div>
+        <div class="intro-actions">
+          <div class="hint-card">
+            <span class="hint-title">Consejo rápido</span>
+            <span class="muted small">Los cambios se guardan automáticamente en tu navegador.</span>
+          </div>
+        </div>
+      </div>
       <div class="panel">
         <div class="panel-head">
           <h2>Partidos</h2>
