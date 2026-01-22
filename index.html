@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Porra Champions 25-26</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="container header-row">
+      <div>
+        <h1>Porra Champions 2025–2026</h1>
+        <p class="muted" id="metaLine">Cargando datos…</p>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn" id="btnExport">Exportar estado</button>
+        <button class="btn" id="btnImport">Importar estado</button>
+        <button class="btn btn-ghost" id="btnReset">Restaurar datos de Excel</button>
+      </div>
+    </div>
+
+    <nav class="tabs">
+      <div class="container tab-row" role="tablist" aria-label="Secciones">
+        <button class="tab active" data-view="league" role="tab" aria-selected="true">League</button>
+        <button class="tab" data-view="admin" role="tab" aria-selected="false">Admin</button>
+        <button class="tab" data-view="clas" role="tab" aria-selected="false">Clas</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="view-league" class="view active" aria-label="League">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Partidos</h2>
+          <div class="filters">
+            <label class="field">
+              <span>Fase</span>
+              <select id="leagueStageFilter"></select>
+            </label>
+
+            <label class="field">
+              <span>Estado</span>
+              <select id="leaguePlayedFilter">
+                <option value="all">Todos</option>
+                <option value="played">Jugados</option>
+                <option value="upcoming">Próximos</option>
+              </select>
+            </label>
+
+            <label class="field grow">
+              <span>Buscar</span>
+              <input id="leagueSearch" type="search" placeholder="Equipo o placeholder (p.ej., Arsenal, WPO1)…" />
+            </label>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table" id="matchesTable">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Fase</th>
+                <th>Partido</th>
+                <th class="center">Resultado real</th>
+                <th class="right">Acción</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="note muted">
+          El estado se guarda en tu navegador (localStorage). Si además creas/actualizas un archivo <code>state.json</code> en el repo, la web lo cargará automáticamente para todos.
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Clasificación fase de liga (equipos)</h2>
+          <div class="muted small">Calculada a partir de los resultados reales introducidos.</div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table" id="standingsTable">
+            <thead>
+              <tr>
+                <th class="center">Pos</th>
+                <th>Equipo</th>
+                <th class="center">Pts</th>
+                <th class="center">J</th>
+                <th class="center">G</th>
+                <th class="center">E</th>
+                <th class="center">P</th>
+                <th class="center">GF</th>
+                <th class="center">GC</th>
+                <th class="center">DG</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-admin" class="view" aria-label="Admin">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Pronósticos por partido</h2>
+          <div class="filters">
+            <label class="field">
+              <span>Jugador</span>
+              <select id="adminPlayerFilter"></select>
+            </label>
+
+            <label class="field">
+              <span>Fase</span>
+              <select id="adminStageFilter"></select>
+            </label>
+
+            <label class="field grow">
+              <span>Buscar</span>
+              <input id="adminSearch" type="search" placeholder="Partido, equipo o placeholder…" />
+            </label>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table" id="adminMatchesTable">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Fase</th>
+                <th>Partido</th>
+                <th class="center">Real</th>
+                <th class="center">Pronóstico</th>
+                <th class="center">Puntos</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Predicciones adicionales</h2>
+          <div class="muted small">Según la hoja ADMIN: posiciones de liga, equipos a 1/8 (desde liga) y equipos de playoffs.</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Posición final (1–36)</h3>
+            <div class="muted small">Puntos por posición exacta: <span id="posPoints"></span></div>
+            <div class="table-wrap">
+              <table class="table compact" id="positionsTable">
+                <thead>
+                  <tr>
+                    <th class="center">Pos</th>
+                    <th>Selección</th>
+                    <th class="center">Puntos</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Equipos a Octavos (desde Liga)</h3>
+            <div class="muted small">Puntos por equipo: <span id="octPoints"></span></div>
+            <div class="table-wrap">
+              <table class="table compact" id="octavosTable">
+                <thead>
+                  <tr>
+                    <th>Slot</th>
+                    <th>Selección</th>
+                    <th class="center">Puntos</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <div class="spacer"></div>
+
+            <h3>Equipos de Playoffs</h3>
+            <div class="muted small">Puntos por equipo: <span id="poTeamPoints"></span></div>
+            <div class="table-wrap">
+              <table class="table compact" id="playoffsTeamsTable">
+                <thead>
+                  <tr>
+                    <th>Slot</th>
+                    <th>Selección</th>
+                    <th class="center">Puntos</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <details class="muted small">
+              <summary>Activar puntuación de estas secciones</summary>
+              En el Excel, estos apartados puntúan cuando se conocen los resultados “reales” (posiciones finales y equipos clasificados).
+              Aquí se activan rellenando los <em>actuales</em> en <code>state.json</code> (o importando un estado) en el bloque <code>picksActual</code>.
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-clas" class="view" aria-label="Clas">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Clasificación (amigos)</h2>
+          <div class="filters">
+            <label class="field">
+              <span>Orden</span>
+              <select id="clasSort">
+                <option value="points">Puntos (desc)</option>
+                <option value="name">Nombre (A–Z)</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table" id="clasTable">
+            <thead>
+              <tr>
+                <th class="center">#</th>
+                <th>Jugador</th>
+                <th class="center">Puntos</th>
+                <th class="center">Desglose</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="note muted">
+          Puntuación por partido (como en el Excel): puntos por signo + bonus por exacto.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container muted small">
+      Sin servidor. Apto para GitHub Pages. Fuente: <code>data.json</code> + (opcional) <code>state.json</code>.
+    </div>
+  </footer>
+
+  <dialog id="dlgMatch">
+    <form method="dialog" class="dialog">
+      <div class="dialog-head">
+        <h3 id="dlgTitle">Editar resultado</h3>
+        <button class="icon-btn" value="cancel" aria-label="Cerrar">×</button>
+      </div>
+
+      <div class="dialog-body">
+        <div class="row">
+          <label class="field">
+            <span>Goles local</span>
+            <input id="dlgHome" inputmode="numeric" pattern="\d*" placeholder="-" />
+          </label>
+          <div class="vs">–</div>
+          <label class="field">
+            <span>Goles visitante</span>
+            <input id="dlgAway" inputmode="numeric" pattern="\d*" placeholder="-" />
+          </label>
+        </div>
+
+        <div class="muted small" id="dlgHint"></div>
+      </div>
+
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" value="cancel">Cancelar</button>
+        <button class="btn" id="dlgSave" value="default">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <input id="fileImport" type="file" accept="application/json" hidden />
+
+  <script src="app.js"></script>
+</body>
+</html>
