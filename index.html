@@ -29,8 +29,7 @@
     <nav class="tabs">
       <div class="container tab-row" role="tablist" aria-label="Secciones">
         <button class="tab active" data-view="league" role="tab" aria-selected="true">🏆 League</button>
-        <button class="tab" data-view="admin" role="tab" aria-selected="false">🛠️ Admin</button>
-        <button class="tab" data-view="clas" role="tab" aria-selected="false">📊 Clas</button>
+        <button class="tab" data-view="clas" role="tab" aria-selected="false">📊 Clasificación</button>
       </div>
     </nav>
   </header>
@@ -56,6 +55,11 @@
         <div class="panel-head">
           <h2>Partidos</h2>
           <div class="filters">
+            <label class="field">
+              <span>Día</span>
+              <select id="leagueDayFilter"></select>
+            </label>
+
             <label class="field">
               <span>Fase</span>
               <select id="leagueStageFilter"></select>
@@ -231,7 +235,7 @@
       </div>
     </section>
 
-    <section id="view-clas" class="view" aria-label="Clas">
+    <section id="view-clas" class="view" aria-label="Clasificación">
       <div class="panel">
         <div class="panel-head">
           <h2>Clasificación (amigos)</h2>
