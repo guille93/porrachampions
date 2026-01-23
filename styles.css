@@ -147,6 +147,10 @@ h1 {
   font-size: 12px;
 }
 
+.sheet-table.friendly-table {
+  font-size: 14px;
+}
+
 .sheet-table thead th {
   position: sticky;
   top: 0;
@@ -163,6 +167,11 @@ h1 {
   white-space: nowrap;
 }
 
+.sheet-table.friendly-table th,
+.sheet-table.friendly-table td {
+  padding: 10px 12px;
+}
+
 .sheet-table tbody tr:nth-child(even) {
   background: #fafbff;
 }
@@ -172,6 +181,12 @@ h1 {
   font-weight: 700;
   text-align: right;
   min-width: 44px;
+}
+
+.sheet-table.friendly-table .score-cell {
+  text-align: center;
+  font-weight: 600;
+  color: #1f3b7a;
 }
 
 .footer {

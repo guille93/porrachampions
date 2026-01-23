@@ -14,6 +14,9 @@ const state = {
   data: {},
 };
 
+const isNumericValue = (value) =>
+  value !== "" && value !== null && value !== undefined && !Number.isNaN(Number(value));
+
 const columnLetter = (index) => {
   let col = "";
   let num = index + 1;
@@ -25,6 +28,50 @@ const columnLetter = (index) => {
   return col;
 };
 
+const dateFormatter = new Intl.DateTimeFormat("es-ES", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+const timeFormatter = new Intl.DateTimeFormat("es-ES", {
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: "UTC",
+});
+
+const formatExcelDate = (value) => {
+  if (!isNumericValue(value)) {
+    return value;
+  }
+  const serial = Number(value);
+  const milliseconds = (serial - 25569) * 86400 * 1000;
+  return new Date(milliseconds);
+};
+
+const formatDateCell = (value) => {
+  const date = formatExcelDate(value);
+  return date instanceof Date && !Number.isNaN(date) ? dateFormatter.format(date) : value;
+};
+
+const formatTimeCell = (value) => {
+  const date = formatExcelDate(value);
+  if (!(date instanceof Date) || Number.isNaN(date)) {
+    return value;
+  }
+  return timeFormatter.format(date);
+};
+
+const formatScoreCell = (left, right) => {
+  if (!isNumericValue(left) && !isNumericValue(right)) {
+    return "-";
+  }
+  const leftValue = isNumericValue(left) ? left : "-";
+  const rightValue = isNumericValue(right) ? right : "-";
+  return `${leftValue} - ${rightValue}`;
+};
+
 const buildTable = (tableEl, grid) => {
   tableEl.innerHTML = "";
   if (!grid || !grid.length) {
@@ -32,6 +79,7 @@ const buildTable = (tableEl, grid) => {
     return;
   }
 
+  tableEl.classList.remove("friendly-table");
   const colCount = grid[0].length;
   const thead = document.createElement("thead");
   const headRow = document.createElement("tr");
@@ -56,11 +104,81 @@ const buildTable = (tableEl, grid) => {
     tr.appendChild(rowHeader);
     row.forEach((cell) => {
       const td = document.createElement("td");
-      td.textContent = cell === "" ? "" : cell;
+      td.textContent = cell === "#VALUE!" ? "" : cell;
       tr.appendChild(td);
     });
     tbody.appendChild(tr);
   });
+
+  tableEl.appendChild(thead);
+  tableEl.appendChild(tbody);
+};
+
+const buildLeagueTable = (tableEl, grid) => {
+  tableEl.innerHTML = "";
+  tableEl.classList.add("friendly-table");
+
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  const headers = [
+    "Jornada",
+    "Fecha",
+    "Hora",
+    "Local",
+    "Resultado",
+    "Visitante",
+    "Pronóstico",
+  ];
+  headers.forEach((label) => {
+    const th = document.createElement("th");
+    th.textContent = label;
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+
+  const tbody = document.createElement("tbody");
+  grid.slice(1).forEach((row) => {
+    const jornada = row[0];
+    const fecha = row[1];
+    const hora = row[2];
+    const local = row[3];
+    const visitante = row[10];
+    const isHeader = String(local).toLowerCase() === "equipo local";
+
+    if (!local || !visitante || isHeader) {
+      return;
+    }
+
+    const tr = document.createElement("tr");
+    const cells = [
+      jornada,
+      formatDateCell(fecha),
+      formatTimeCell(hora),
+      local,
+      formatScoreCell(row[6], row[7]),
+      visitante,
+      formatScoreCell(row[5], row[8]),
+    ];
+
+    cells.forEach((value, index) => {
+      const td = document.createElement("td");
+      td.textContent = value === "#VALUE!" ? "" : value;
+      if (index === 4 || index === 6) {
+        td.classList.add("score-cell");
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  if (!tbody.children.length) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = headers.length;
+    td.textContent = "No hay partidos cargados.";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  }
 
   tableEl.appendChild(thead);
   tableEl.appendChild(tbody);
@@ -96,7 +214,11 @@ const loadSheet = async (key) => {
   const data = await response.json();
   state.data[key] = data;
   const tableEl = document.querySelector(`table[data-table="${key}"]`);
-  buildTable(tableEl, data);
+  if (key === "league") {
+    buildLeagueTable(tableEl, data);
+  } else {
+    buildTable(tableEl, data);
+  }
 };
 
 const setupTabs = () => {
